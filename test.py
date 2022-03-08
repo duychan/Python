@@ -56,6 +56,15 @@ Open = [(Start,None,None)]
 Closed = {Start}
 # 2. Nếu open rỗng thì tìm kiếm thất bại, kết thúc việc tìm kiếm.
 # 6. Trở lại bước 2.
+def priority(arr):
+    max = 0
+    for i in range(len(arr)):
+        if arr[i] > arr[max]:
+            max = i
+    item = arr[max]
+    del arr[max]
+    return item
+
 while len(Open) > 0:
   count += 1
   # 3. Lấy đỉnh đầu trong open ra và gọi đó là ʘ. Cho ʘ vào closed
