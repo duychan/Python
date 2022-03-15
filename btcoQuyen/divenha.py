@@ -1,21 +1,21 @@
 n = int(input())
-listCostOfTickets = list(set(map(int,input().split())))
+listCostOfTickets = list(map(int,input().split()))
 numberSV = int(input())
 arr = []
-dicBa = {}
-for i in range(1,numberSV+1):
+def binary_search(left, right, arr, val):
+      if val < arr[0]: return -1
+      while left <= right:
+        mid = left + (right - left) // 2
+        if arr[mid] < val:
+          left = mid + 1
+        elif arr[mid] > val:
+          right = mid - 1
+        elif arr[mid] == val:
+              return val
+      return arr[right]
+for _ in range(numberSV):
     balance = int(input())
-    if balance in dicBa:
-        arr.append(dicBa[balance])
-    else:
-        defaultVal = -1
-        if balance in listCostOfTickets:
-            defaultVal = balance
-        else:
-            for j in listCostOfTickets:
-                if balance >= j:
-                    defaultVal = j
-        arr.append(defaultVal)
-        dicBa[balance] = defaultVal
+    arr.append(balance)
 for i in arr:
-    print(i)
+    print(binary_search(0,len(listCostOfTickets)-1, listCostOfTickets, i))
+      
