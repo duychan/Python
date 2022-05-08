@@ -1,9 +1,10 @@
 from django.shortcuts import render
-
+from .models import *
 # Create your views here.
 
 def store(req):
-    context = {'name': 'store'}
+    products = Product.objects.all()
+    context = {'products': products}
     return render(req, 'store/store.html', context)
 
 def cart(req):

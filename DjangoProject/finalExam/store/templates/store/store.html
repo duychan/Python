@@ -1,16 +1,21 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content%}
-<div class="row">
-      <div class="col-lg-4">
-            <img class="thumbnail" src="{% static 'images/catmeme.png' %}" alt="">
+<h1 style="text-align: center; color:crimson;font-size: 50px;">Well Come</h1>
+<div  class="row">
+      {% for product in products %}
+      <div style="margin-bottom:50px ;border: 2px dashed #70c1bb !important;margin-left:80px ;"class="col-lg-3">
+            {% if product.image %}
+            <img class="thumbnail" src="{{product.image.url}}" alt="">
+            {% endif %}
             <div class="box-element product">
-                  <h6><strong>Ko</strong></h6> <hr>
+                  <h6 style="color:black;font-size: larger ;"><strong>{{product.name}}</strong></h6> <hr>
                   <button>Thêm vào giỏ</button>
-                  <h4 style="color: red; display: inline;float: right;">20.000 VND</h4>
+                  <h4 style="color: red; display: inline;float: right;">{{product.price}}</h4>
             </div>
       </div>
-      <div class="col-lg-4">
+      {% endfor %}
+      <!-- <div class="col-lg-4">
             <img class="thumbnail" src="{% static 'images/catmeme.png' %}" alt="">
             <div class="box-element product">
                   <h6><strong>bit</strong></h6> <hr>
@@ -25,7 +30,7 @@
                   <button>Thêm vào giỏ</button>
                   <h4 style="color: red; display: inline;float: right;">20.000 VND</h4>
             </div>
-      </div>
+      </div> -->
 </div>
 
 {% endblock content%}
