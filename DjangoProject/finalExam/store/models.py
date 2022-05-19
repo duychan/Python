@@ -1,3 +1,4 @@
+from ast import Try
 import email
 from django.db import models
 from django.contrib.auth.models import User
@@ -18,6 +19,15 @@ class Order(models.Model):
     def __str_(self):
         return str(self.id)
     
+    @property
+    def getTotalBill(self):
+        orderItems = self.orderitem_set.all()
+        return sum([i.product.price for i in orderItems])
+    @property
+    def getTotalItem(self):
+        orderItems = self.orderitem_set.all()
+        return sum([i.quantity for i in orderItems])
+
 class Product(models.Model):
     name = models.CharField(max_length=200)
     price = models.FloatField()
@@ -25,6 +35,14 @@ class Product(models.Model):
     image = models.ImageField(null= True, blank= True)
     def __str__(self):
         return self.name
+        
+    @property
+    def imageUrl(self):
+        try:
+            url = self.image.url
+        except:
+            url = ''
+        return url
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
