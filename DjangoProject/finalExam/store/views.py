@@ -18,6 +18,7 @@ def cart(req):
 
     context = {
         "items" : items,
+        "order" : order,
         }
 
     return render(req, 'store/cart.html', context)

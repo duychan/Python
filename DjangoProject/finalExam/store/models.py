@@ -22,7 +22,9 @@ class Order(models.Model):
     @property
     def getTotalBill(self):
         orderItems = self.orderitem_set.all()
-        return sum([i.product.price for i in orderItems])
+        total = sum([i.totalBill for i in orderItems])
+        return "{:,.0f}".format(total)
+    
     @property
     def getTotalItem(self):
         orderItems = self.orderitem_set.all()
@@ -43,6 +45,12 @@ class Product(models.Model):
         except:
             url = ''
         return url
+    
+    @property
+    def formatCur(self):
+        amount = self.price
+        currency = "{:,.0f}".format(amount)
+        return currency
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
@@ -50,6 +58,15 @@ class OrderItem(models.Model):
     quantity = models.IntegerField(default=0, null=True, blank=True)
     dateAdded = models.DateTimeField(auto_now_add=True)
     
+    @property
+    def totalBill(self):
+        return self.product.price * self.quantity
+    
+    @property
+    def formatCur(self):
+        amount = self.totalBill
+        currency = "{:,.0f}".format(amount)
+        return currency
 class ShippingAddress(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True)
