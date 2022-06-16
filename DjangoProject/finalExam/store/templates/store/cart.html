@@ -29,9 +29,9 @@
                 <div style="flex: 1;">{{ item.product.formatCur}}</div>
                 <div style="flex: 1;">
                     <div class="quantity">
-                        <img class="chg-quantity" src="{% static 'images/plus_icon.png' %}" alt="">
+                        <img class="chg-quantity btn_update" data-id="{{item.product.id}}" data-action="add" src="{% static 'images/plus_icon.png' %}" alt="">
                       <br>
-                        <img class="chg-quantity" src="{% static 'images/minus_icon.png' %}" alt="">
+                        <img class="chg-quantity btn_update" data-id="{{item.product.id}}" data-action="remove" src="{% static 'images/minus_icon.png' %}" alt="">
                     </div>
                     <div class="quantity">{{item.quantity}}</div>
                 </div>
