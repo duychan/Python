@@ -1,3 +1,4 @@
+from functools import total_ordering
 from django.shortcuts import render
 from .models import *
 import datetime
@@ -8,14 +9,18 @@ def store(req):
     if req.user.is_authenticated:
         customer = req.user.customer
         order, created = Order.objects.get_or_create(customer = customer, complete = False)
-        items = order.orderitem_set.all()
         countItem = order.getTotalItem
     else:
-        items = []
         order = {"getTotalBill": 0,
                  "getTotalItem": 0
                  }
-        countItem = order['getTotalItem']
+        countItem = 0
+        try:
+            cart = json.loads(req.COOKIES['cart'])
+        except:
+            cart = {}
+        for i in cart:
+            countItem += cart[i]["quantity"]
     context = {'products': products,"countItem": countItem}
     return render(req, 'store/store.html', context)
 
@@ -30,13 +35,29 @@ def cart(req):
         order = {"getTotalBill": 0,
                  "getTotalItem": 0
                  }
-        countItem = order['getTotalItem']
+        countItem = 0
+        total = 0
+        try:
+            cart = json.loads(req.COOKIES['cart'])
+        except:
+            cart = {}
+        for i in cart:
+            countItem += cart[i]["quantity"]
+            product = Product.objects.get(id=i)
+            total += cart[i]['quantity'] * product.price
+            order['getTotalBill'] = total
+            order['getTotalItem'] = countItem
+            item = {
+                'product': product,
+                'quantity': cart[i]['quantity'],
+                'formatCur': cart[i]['quantity'] * product.price
+            }
+            items.append(item)
     context = {
         "items" : items,
         "order" : order,
-        "countItem": countItem
+        "countItem": countItem 
         }
-
     return render(req, 'store/cart.html', context)
 
 def checkout(req):
@@ -50,17 +71,35 @@ def checkout(req):
         order = {"getTotalBill": 0,
                  "getTotalItem": 0
                  }
-        countItem = order['getTotalItem']
+        countItem = 0
+        totalItems = 0
+        try:
+            cart = json.loads(req.COOKIES['cart'])
+        except:
+            cart = {}
+        for i in cart:
+            countItem += cart[i]["quantity"]
+            quantity = cart[i]['quantity']
+            totalItems += quantity
+            product = Product.objects.get(id=i)
+            order['getTotalBill'] = product.price * totalItems
+            order['getTotalItem'] = totalItems
+            totalBill = product.price * quantity
+            item = {
+                'product': product,
+                'quantity': quantity,
+                'totalBill': totalBill,
+            }
+            items.append(item)
     context = {
         "items" : items,
         "order" : order,
-        "countItem" : countItem
+        "countItem": countItem
         }
     return render(req, 'store/checkout.html', context)
 
 def main(req):
-    context = {
-        }
+    context = {}
     return render(req, 'store/main.html', context)
 
 def updateItem(req):
@@ -74,7 +113,7 @@ def updateItem(req):
     if action == 'add':
         orderItem.quantity += 1
     if action == 'remove':
-            orderItem.quantity -= 1 
+            orderItem.quantity -= 1
     orderItem.save()
     if orderItem.quantity <= 0:
             try:
@@ -90,14 +129,16 @@ def processOrder(req):
     transactionId = datetime.datetime.now().timestamp()
     if req.user.is_authenticated:
         customer = req.user.customer
-        order, created = Order.objects.get_or_create(customer = customer, complete = False)
+        order, created = Order.objects.get_or_create(customer = customer,
+                                                     complete = False)
         order.transactionId = transactionId
-        
         ShippingAddress.objects.create(customer= customer,
-        order= order, address= shippingInfo['address'], city= shippingInfo['city'],
+        order= order, address= shippingInfo['address'],
+        city= shippingInfo['city'],
         phoneNumber= shippingInfo['phone_number'])
-        print(userInfo['total'],order.getTotalBill )
         if userInfo['total'] == order.getTotalBill:
             order.complete = True
         order.save()
+    else:
+        print(1123)
     return JsonResponse("Payment completed", safe= False)

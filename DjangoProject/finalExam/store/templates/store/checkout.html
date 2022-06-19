@@ -46,7 +46,7 @@
                 <div style="flex:2"><img class="row-image" src="{{item.product.imageUrl}}" alt=""></div>
                 <div style="flex:2"><p>{{item.product.name}}</p></div>
                 <div style="flex:1"><p>x{{item.quantity}}</p></div>
-                <div style="flex:1"><p>{{item.product.price}} VND</p></div>
+                <div style="flex:1"><p>{{item.totalBill}} VND</p></div>
             </div>
             {% endfor %}
             <h5>Items: {{ order.getTotalItem }}</h5>
@@ -101,6 +101,8 @@
         return resolve.json();
         })
         .then((resolve) => {
+            cart = {}
+            document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
         alert("Transaction completed");
         window.location.href = "{% url 'store' %}";
         })
