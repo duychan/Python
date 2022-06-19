@@ -5,7 +5,6 @@
     <div class="col-lg-6">
         <div class="box-element" id="form-wrapper">
             <br>
-            
             <form id="form" action="">
                 <div id="user-info">
                     <div class="form-field">
@@ -30,11 +29,10 @@
                     </div>
                 </div>
                 <hr>
-                <button id="form-button" class="btn btn-success btn-block">Continue</button>
             </form>
         </div>
-        <div class="box-element hidden" id="payment-info">
-            <small>Paypal Options</small>
+        <div class="box-element">
+            <button id="make-payment">Thanh toán</button>
         </div> 
     </div>
     <div class="col-lg-6">
@@ -43,15 +41,75 @@
             <hr>
             <h3>Order Summary</h3>
             <hr>
+            {% for item in items %}
             <div class="cart-row">
-                <div style="flex:2"><img class="row-image" src="{% static 'images/catmeme.png' %}" alt=""></div>
-                <div style="flex:2"><p>Product</p></div>
-                <div style="flex:1"><p>20.000 VND</p></div>
-                <div style="flex:1"><p>x2</p></div>
+                <div style="flex:2"><img class="row-image" src="{{item.product.imageUrl}}" alt=""></div>
+                <div style="flex:2"><p>{{item.product.name}}</p></div>
+                <div style="flex:1"><p>x{{item.quantity}}</p></div>
+                <div style="flex:1"><p>{{item.totalBill}} VND</p></div>
             </div>
-            <h5>Items: 2</h5>
-            <h5>Total: 40.000 VND</h5>
+            {% endfor %}
+            <h5>Items: {{ order.getTotalItem }}</h5>
+            <h5>Total: {{ order.getTotalBill }} VND</h5>
         </div>
     </div>
 </div>
+<script>
+    if (user != "AnonymousUser") {
+        document.querySelector("#user-info").innerHTML = "";
+      }
+    const btnPayment = document.querySelector("#make-payment");
+    const form = document.querySelector("#form");
+    const totalBill = "{{order.getTotalBill}}";
+
+    btnPayment.addEventListener("click", function () {
+    const userInfo = {
+        name: null,
+        email: null,
+        total: null,
+    };
+
+    const shippingInfo = {
+        address: null,
+        city: null,
+        phone_number: null,
+    };
+
+    shippingInfo.address = form.address.value;
+    shippingInfo.city = form.city.value;
+    shippingInfo.phone_number = form.phone_number.value;
+
+    userInfo.name = user;
+    userInfo.total = totalBill;
+
+    processOrder(userInfo, shippingInfo);
+    console.log(user);
+    });
+
+    const processOrder = (userInfo, shippingInfo) => {
+    const url = "/complete_order/";
+    fetch(url, {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": csrftoken,
+        },
+        body: JSON.stringify({ userInfo: userInfo, shippingInfo: shippingInfo }),
+        mode: "same-origin",
+    })
+        .then((resolve) => {
+        return resolve.json();
+        })
+        .then((resolve) => {
+            cart = {}
+            document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
+        alert("Transaction completed");
+        window.location.href = "{% url 'store' %}";
+        })
+        .catch((reject) => {
+        console.log(reject);
+        });
+    };
+
+</script>
 {% endblock content%}

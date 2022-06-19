@@ -4,13 +4,14 @@
 <h1 style="text-align: center; color:crimson;font-size: 50px;">Well Come</h1>
 <div  class="row">
       {% for product in products %}
-      <div style="margin-bottom:50px ;border: 2px dashed #70c1bb !important;margin-left:80px ;"class="col-lg-3">
+      <div style="margin-bottom: 50px; border: 2px dashed #70c1bb !important;margin-left:80px ;"
+      class="col-lg-3">
             {% if product.image %}
             <img class="thumbnail" src="{{product.imageUrl}}" alt="">
             {% endif %}
             <div class="box-element product">
                   <h6 style="color:black;font-size: larger ;"><strong>{{product.name}}</strong></h6> <hr>
-                  <button>Thêm vào giỏ</button>
+                  <button class="btn_update" data-id="{{product.id}}" data-action="add">Thêm vào giỏ</button>
                   <h4 style="color: red; display: inline;float: right;">{{product.price|floatformat:2}}</h4>
             </div>
       </div>
@@ -32,5 +33,4 @@
             </div>
       </div> -->
 </div>
-
 {% endblock content%}
