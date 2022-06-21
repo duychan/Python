@@ -129,16 +129,10 @@ def processOrder(req):
     transactionId = datetime.datetime.now().timestamp()
     if req.user.is_authenticated:
         customer = req.user.customer
-        order, created = Order.objects.get_or_create(customer = customer,
-                                                     complete = False)
-    else:
-        name = userInfo['name']
-        email = userInfo['email']
-        print(name, email)
-        customer , created = Customer.objects.get_or_create(
-            name = name,
-            email=email,
-        )
+        order, created = Order.objects.get_or_create(
+            customer= customer, 
+            complete = False
+            )
         try:
             cart = json.loads(req.COOKIES['cart'])
         except:
@@ -146,10 +140,26 @@ def processOrder(req):
         for i in cart:
             quantity = cart[i]['quantity']
             product = Product.objects.get(id=i)
-            order,created = Order.objects.get_or_create(customer = customer, complete = False)
-            
+            orderItem = OrderItem.objects.create(order= order, product= product, quantity= quantity)
+    else:
+        name = userInfo['name']
+        email = userInfo['email']
+        customer , created = Customer.objects.get_or_create(
+            name= name,
+            email= email,
+        )
+        order,created = Order.objects.get_or_create(customer= customer, complete= False)
+
+        try:
+            cart = json.loads(req.COOKIES['cart'])
+        except:
+            cart = {}
+        for i in cart:
+            quantity = cart[i]['quantity']
+            product = Product.objects.get(id=i)
+            orderItem = OrderItem.objects.create(order= order, product= product, quantity= quantity)
+    
     order.transactionId = transactionId
-    orderItem = OrderItem.objects.create(order = order, product = product, quantity = quantity)
     ShippingAddress.objects.create(customer= customer,
         order= order, address= shippingInfo['address'],
         city= shippingInfo['city'],

@@ -80,9 +80,11 @@
     shippingInfo.city = form.city.value;
     shippingInfo.phone_number = form.phone_number.value;
 
-    userInfo.name = form.name.value;
-    userInfo.email = form.email.value;
-    userInfo.total = totalBill;
+    if(user == "AnonymousUser"){
+        userInfo.name = form.name.value;
+        userInfo.email = form.email.value;
+        userInfo.total = totalBill;
+    }
 
     processOrder(userInfo, shippingInfo);
     });
@@ -102,8 +104,8 @@
         return resolve.json();
         })
         .then((resolve) => {
-            cart = {}
-            document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
+        cart = {}
+        document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
         alert("Transaction completed");
         window.location.href = "{% url 'store' %}";
         })
