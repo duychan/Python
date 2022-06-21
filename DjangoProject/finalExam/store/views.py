@@ -131,14 +131,28 @@ def processOrder(req):
         customer = req.user.customer
         order, created = Order.objects.get_or_create(customer = customer,
                                                      complete = False)
-        order.transactionId = transactionId
-        ShippingAddress.objects.create(customer= customer,
+    else:
+        name = userInfo['name']
+        email = userInfo['email']
+        print(name, email)
+        customer = Customer.objects.create(email= email)
+        customer.save()
+        try:
+            cart = json.loads(req.COOKIES['cart'])
+        except:
+            cart = {}
+        for i in cart:
+            quantity = cart[i]['quantity']
+            product = Product.objects.get(id=i)
+            order,created = Order.objects.get_or_create(customer = customer, complete = False)
+            
+    order.transactionId = transactionId
+    orderItem = OrderItem.objects.create(order = order, product = product, quantity = quantity)
+    ShippingAddress.objects.create(customer= customer,
         order= order, address= shippingInfo['address'],
         city= shippingInfo['city'],
         phoneNumber= shippingInfo['phone_number'])
-        if userInfo['total'] == order.getTotalBill:
-            order.complete = True
-        order.save()
-    else:
-        print(1123)
+    if userInfo['total'] == order.getTotalBill:
+        order.complete = True
+    order.save()
     return JsonResponse("Payment completed", safe= False)

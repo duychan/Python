@@ -79,11 +79,11 @@
     shippingInfo.city = form.city.value;
     shippingInfo.phone_number = form.phone_number.value;
 
-    userInfo.name = user;
+    userInfo.name = form.name.value;
+    userInfo.email = form.email.value;
     userInfo.total = totalBill;
 
     processOrder(userInfo, shippingInfo);
-    console.log(user);
     });
 
     const processOrder = (userInfo, shippingInfo) => {
