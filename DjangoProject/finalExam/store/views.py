@@ -1,5 +1,5 @@
 from functools import total_ordering
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from .models import *
 import datetime
 # Create your views here.
@@ -135,8 +135,10 @@ def processOrder(req):
         name = userInfo['name']
         email = userInfo['email']
         print(name, email)
-        customer = Customer.objects.create(email= email)
-        customer.save()
+        customer , created = Customer.objects.get_or_create(
+            name = name,
+            email=email,
+        )
         try:
             cart = json.loads(req.COOKIES['cart'])
         except:

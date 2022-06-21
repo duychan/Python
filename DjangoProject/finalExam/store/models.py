@@ -9,7 +9,7 @@ class Customer(models.Model):
     name = models.CharField(max_length=200, null=True)
     email = models.EmailField(max_length=200, null=True)
     def __str__(self):
-        return self.name
+        return str(self.name)
     
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
@@ -23,12 +23,12 @@ class Order(models.Model):
     def getTotalBill(self):
         orderItems = self.orderitem_set.all()
         total = sum([i.totalBill for i in orderItems])
-        return "{:,.0f}".format(total)
+        return (total)
     
     @property
     def getTotalItem(self):
         orderItems = self.orderitem_set.all()
-        return sum([i.quantity for i in orderItems])
+        return (sum([i.quantity for i in orderItems]))
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
@@ -48,7 +48,7 @@ class Product(models.Model):
     @property
     def formatCur(self):
         amount = self.price
-        currency = "{:,.0f}".format(amount)
+        currency = "{:20,.2f}".format(amount)
         return currency
     
 class OrderItem(models.Model):
@@ -59,12 +59,12 @@ class OrderItem(models.Model):
     
     @property
     def totalBill(self):
-        return self.product.price * self.quantity
+        return (self.product.price * self.quantity)
     
     @property
     def formatCur(self):
         amount = self.totalBill
-        currency = "{:,.0f}".format(amount)
+        currency = "{:20,.2f}".format(amount)
         return currency
     
 class ShippingAddress(models.Model):
@@ -75,6 +75,6 @@ class ShippingAddress(models.Model):
     phoneNumber = models.CharField(null=True,max_length=11)
     dateAdded = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.address
+        return str(self.address)
 
 
